@@ -71,3 +71,4 @@ export default defineConfig([
   },
 ])
 ```
+Grupo: Hermeson, Copilot, Cloud, Vite, React, TypeScript, ESLint, Cloude haruko 4.6, openai gpt-4.6,
