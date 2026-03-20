@@ -20,14 +20,14 @@ export default function CadastroView() {
     setForm({ ...form, [e.target.id]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {           
     e.preventDefault();
     setLocalError(null);
 
-    if (!form.nome.trim() || !form.email.trim() || !form.senha.trim()) {
+    if (!form.nome.trim() || !form.email.trim() || !form.senha.trim()) {    
       setLocalError("Preencha todos os campos.");
       return;
-    }
+    } 
 
     try {
       await register({
@@ -38,7 +38,7 @@ export default function CadastroView() {
 
       navigate("/");
     } catch {
-      // erro já capturado e exposto pelo hook via `error`
+      // erro já capturado e exposto pelo hook via `error`       
     }
   };
 

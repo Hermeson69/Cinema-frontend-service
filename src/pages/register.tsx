@@ -10,12 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
-import { useSeats } from "@/hooks/use.seats";
-import { useAuth } from "@/hooks/use.auth";
-import type { SeatResponse } from "@/types/Seat.types";
+import { Separator } from "@/components/ui/separator"; 
+import { useSeats } from "@/hooks/use.seats"; 
+import { useAuth } from "@/hooks/use.auth"; 
+import type { SeatResponse } from "@/types/Seat.types"; 
 
-// ── Helpers de cor ────────────────────────────────────────────────────────────
+// ── Helpers de cor ────────────────────────────────────────────────────────────    
 function seatColor(seat: SeatResponse, idUsuario: string) {
   if (seat.status !== "available") {
     // assento do próprio usuário → vermelho clicável
@@ -29,27 +29,27 @@ function seatColor(seat: SeatResponse, idUsuario: string) {
   return "bg-[#2ecc71] hover:opacity-85 cursor-pointer";
 }
 
-// ── Componente principal ──────────────────────────────────────────────────────
+// ── Componente principal ──────────────────────────────────────────────────────    
 export default function ReservasView() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const emailUsuario = searchParams.get("email") || "Usuário";
-  const idUsuario    = searchParams.get("id") || "";
-  const iniciais     = emailUsuario.slice(0, 2).toUpperCase();
+  const emailUsuario = searchParams.get("email") || "Usuário";    
+  const idUsuario    = searchParams.get("id") || "";       
+  const iniciais     = emailUsuario.slice(0, 2).toUpperCase();   
 
-  const { token, logout: authLogout } = useAuth();
-  const { seats, loading, error, fetchSeats, reserve, cancel } = useSeats(token ?? undefined);
+  const { token, logout: authLogout } = useAuth();    
+  const { seats, loading, error, fetchSeats, reserve, cancel } = useSeats(token ?? undefined);    
 
-  const [selectedSeat, setSelectedSeat]   = useState<SeatResponse | null>(null);
-  const [actionLoading, setActionLoading] = useState(false);
-  const [actionError, setActionError]     = useState<string | null>(null);
+  const [selectedSeat, setSelectedSeat]   = useState<SeatResponse | null>(null);    
+  const [actionLoading, setActionLoading] = useState(false);     
+  const [actionError, setActionError]     = useState<string | null>(null);    
 
   useEffect(() => {
     fetchSeats();
   }, [fetchSeats]);
 
-  // ── Abre modal apenas para assentos clicáveis ─────────────────────────────
+  // ── Abre modal apenas para assentos clicáveis ─────────────────────────────               
   function handleSeatClick(seat: SeatResponse) {
     // bloqueado: ocupado por outro usuário
     if (seat.status !== "available" && seat.clientId !== idUsuario) return;
@@ -57,7 +57,7 @@ export default function ReservasView() {
     setSelectedSeat(seat);
   }
 
-  // ── Reservar ───────────────────────────────────────────────────────────────
+  // ── Reservar ───────────────────────────────────────────────────────────────          
   async function handleReserve() {
     if (!selectedSeat) return;
     setActionLoading(true);
@@ -132,7 +132,7 @@ export default function ReservasView() {
 
             {loading && (
               <p className="text-center text-sm text-muted-foreground">
-                Carregando assentos...
+                Carregando assentos... 
               </p>
             )}
 
