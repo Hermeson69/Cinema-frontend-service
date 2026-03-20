@@ -6,7 +6,11 @@ export interface ClientCreate {
   password: string;
 }
 
-export type LoginData = ClientCreate; // email + password
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
 export type SignupData = ClientCreate; // mesmo shape que CreateClient
 
 export interface ClientResponse {

@@ -1,17 +1,19 @@
+// src/views/LoginView.tsx
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/hooks/use.auth";
 
 export default function LoginView() {
   const navigate = useNavigate();
+  const { login, loading, error } = useAuth();
 
   const [form, setForm] = useState({ email: "", senha: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.id]: e.target.value });
@@ -19,32 +21,18 @@ export default function LoginView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email, senha: form.senha }),
+      const data = await login({
+        email: form.email,
+        password: form.senha,
       });
 
-      if (res.status === 401) {
-        setError("E-mail ou senha inválidos.");
-        return;
-      }
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.message || `Erro ${res.status}`);
-      }
-
-      const data = await res.json();
-      navigate(`/reservas?email=${encodeURIComponent(form.email)}&id=${data.id}`);
-    } catch (err: any) {
-      setError(err.message || "Erro ao realizar login.");
-    } finally {
-      setLoading(false);
+      navigate(
+        `/reservas?email=${encodeURIComponent(data.client.email)}&id=${data.client.publicId}`,
+      );
+    } catch {
+      // erro já capturado e exposto pelo hook via `error`
     }
   };
 
@@ -55,7 +43,7 @@ export default function LoginView() {
     >
       {/* Logo no canto */}
       <div className="absolute top-5 left-8">
-        <img src="src/assets/logocine.png" alt="Logo" className="h-20 w-20" />
+        <img src="src/assets/logocine.png" alt="Logo" className="h-40 w-40" />
       </div>
 
       <div className="w-full max-w-sm space-y-10">
@@ -96,12 +84,6 @@ export default function LoginView() {
               <Label htmlFor="senha" className="text-white/80">
                 Senha
               </Label>
-              <Link
-                to="#"
-                className="text-sm text-[#ff4b2b] hover:text-[#ff2a00] underline underline-offset-4 hover:no-underline transition-colors"
-              >
-                Esqueceu a senha?
-              </Link>
             </div>
 
             <div className="relative">

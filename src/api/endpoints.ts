@@ -1,10 +1,4 @@
-
-
-const API_URL = import.meta.env.VITE_BACKEND_URL 
-
-if (!API_URL) {
-  throw new Error("Variável de ambiente API_CONFIG não configurada");
-}
+const API_URL = import.meta.env.VITE_BACKEND_URL || "";
 
 export const AUTH_ENDPOINTS = {
   REGISTER: `${API_URL}/api/auth/register/`,

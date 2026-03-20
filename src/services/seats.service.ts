@@ -10,12 +10,12 @@ async function putWithClientId(
   url: string,
   body: UpdateSeatData,
   token?: string,
-  clientId?: string,
+  clientId?: string | null,
 ): Promise<SeatResponse> {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
-    ...(token    && { Authorization: `Bearer ${token}` }),
-    ...(clientId && { "x-client-id": clientId }),
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...(clientId !== undefined && { "x-client-id": clientId }),
   };
 
   const response = await fetch(url, {
@@ -50,14 +50,38 @@ async function putWithClientId(
   return response.json() as Promise<SeatResponse>;
 }
 
+// Função para ordenação natural (A1, A2, ..., A10, B1, ...)
+function naturalSort(a: string, b: string): number {
+  const regex = /(\D+)(\d+)/;
+  const matchA = a.match(regex);
+  const matchB = b.match(regex);
+
+  if (!matchA || !matchB) {
+    return a.localeCompare(b);
+  }
+
+  const [, letterA, numA] = matchA;
+  const [, letterB, numB] = matchB;
+
+  if (letterA !== letterB) {
+    return letterA.localeCompare(letterB);
+  }
+
+  return parseInt(numA, 10) - parseInt(numB, 10);
+}
+
 export const SeatService = {
   /**
    * GET /api/seats/
-   * Lista todos os assentos da sala
+   * Lista todos os assentos da sala em ordem natural (A1, A2, ..., A10, B1, ...)
    */
   list: async (token?: string): Promise<SeatResponse[]> => {
     try {
-      return await getRequest<SeatResponse[]>(SEATS_ENDPOINTS.GET_ALL, token);
+      const seats = await getRequest<SeatResponse[]>(
+        SEATS_ENDPOINTS.GET_ALL,
+        token,
+      );
+      return seats.sort((a, b) => naturalSort(a.seat_number, b.seat_number));
     } catch (error) {
       return handleError(error, "Erro ao carregar assentos");
     }
@@ -88,18 +112,15 @@ export const SeatService = {
   /**
    * PUT /api/seats/{publicId}
    * Cancela a reserva removendo o clientId e voltando para "available"
-   * Não passa x-client-id para desatrelar o cliente
+   * Envia x-client-id como null para desatrelar explicitamente
    */
-  cancel: async (
-    publicId: string,
-    token?: string,
-  ): Promise<SeatResponse> => {
+  cancel: async (publicId: string, token?: string): Promise<SeatResponse> => {
     try {
       return await putWithClientId(
         SEATS_ENDPOINTS.UPDATE(publicId),
         { status: "available" },
         token,
-        undefined, // sem x-client-id para desatrelar
+        null, // null para limpar clientId
       );
     } catch (error) {
       return handleError(error, "Erro ao cancelar reserva");

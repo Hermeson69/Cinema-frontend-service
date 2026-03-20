@@ -1,21 +1,20 @@
+// src/views/CadastroView.tsx
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/hooks/use.auth";
 
 export default function CadastroView() {
   const navigate = useNavigate();
+  const { register, loading, error } = useAuth();
 
-  const [form, setForm] = useState({
-    nome: "",
-    email: "",
-    senha: "",
-  });
+  const [form, setForm] = useState({ nome: "", email: "", senha: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.id]: e.target.value });
@@ -23,42 +22,27 @@ export default function CadastroView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setLocalError(null);
 
     if (!form.nome.trim() || !form.email.trim() || !form.senha.trim()) {
-      setError("Preencha todos os campos.");
+      setLocalError("Preencha todos os campos.");
       return;
     }
 
-    setLoading(true);
     try {
-      const res = await fetch("/api/usuarios", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nome: form.nome,
-          email: form.email,
-          senha: form.senha,
-        }),
+      await register({
+        name: form.nome,
+        email: form.email,
+        password: form.senha,
       });
 
-      if (res.status === 409) {
-        setError("Este e-mail já está cadastrado.");
-        return;
-      }
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.message || `Erro ${res.status}`);
-      }
-
       navigate("/");
-    } catch (err: any) {
-      setError(err.message || "Erro ao realizar cadastro.");
-    } finally {
-      setLoading(false);
+    } catch {
+      // erro já capturado e exposto pelo hook via `error`
     }
   };
+
+  const displayError = localError || error;
 
   return (
     <div
@@ -67,7 +51,7 @@ export default function CadastroView() {
     >
       {/* Logo no canto */}
       <div className="absolute top-5 left-8">
-         <img src="src/assets/logocine.png" alt="Logo" className="h-20 w-20" />
+        <img src="src/assets/logocine.png" alt="Logo" className="h-40 w-40" />
       </div>
 
       <div className="w-full max-w-sm space-y-10">
@@ -151,12 +135,10 @@ export default function CadastroView() {
             </div>
           </div>
 
-         
-
           {/* Erro */}
-          {error && (
+          {displayError && (
             <div className="text-center text-sm text-red-400 bg-red-500/10 rounded-xl p-3">
-              {error}
+              {displayError}
             </div>
           )}
 
@@ -180,25 +162,6 @@ export default function CadastroView() {
             </Link>
           </p>
         </form>
-
-        {/* Rodapé legal
-        <p className="text-center text-xs text-white/30 pt-2">
-          Ao criar uma conta, você concorda com os{" "}
-          <Link
-            to="/terms"
-            className="underline underline-offset-4 hover:text-white/60 transition-colors"
-          >
-            Termos de Serviço
-          </Link>{" "}
-          e a{" "}
-          <Link
-            to="/privacy"
-            className="underline underline-offset-4 hover:text-white/60 transition-colors"
-          >
-            Política de Privacidade
-          </Link>
-          .
-        </p> */}
       </div>
     </div>
   );
