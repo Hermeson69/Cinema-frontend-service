@@ -23,7 +23,7 @@ export default function LoginView() {
     e.preventDefault();
 
     try {
-      const data = await login({                 
+      const data = await login({                    
         email: form.email,
         password: form.senha,           
       });
