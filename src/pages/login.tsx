@@ -130,13 +130,13 @@ export default function LoginView() {
           </Button>
 
           {/* Link cadastro */}
-          <p className="text-center text-sm text-white/50">
+          <p className="text-center text-sm text-white/50">     
             Ainda não possui conta?{" "}
             <Link
               to="/sigup"
               className="text-[#ff4b2b] hover:text-[#ff2a00] font-medium underline underline-offset-4 hover:no-underline transition-colors"
             >
-              Criar conta gratuita
+              Criar conta gratuita    
             </Link>
           </p>
         </form>
