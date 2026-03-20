@@ -23,9 +23,9 @@ export default function LoginView() {
     e.preventDefault();
 
     try {
-      const data = await login({
+      const data = await login({                 
         email: form.email,
-        password: form.senha,
+        password: form.senha,           
       });
 
       navigate(
@@ -43,7 +43,7 @@ export default function LoginView() {
     >
       {/* Logo no canto */}
       <div className="absolute top-5 left-8">
-        <img src="src/assets/logocine.png" alt="Logo" className="h-40 w-40" />
+        <img src="src/assets/logocine.png" alt="Logo" className="h-40 w-40" />          
       </div>
 
       <div className="w-full max-w-sm space-y-10">
