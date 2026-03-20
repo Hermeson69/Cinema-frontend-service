@@ -15,7 +15,7 @@ async function putWithClientId(
   const headers: HeadersInit = {
     "Content-Type": "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
-    ...(clientId !== undefined && { "x-client-id": clientId }),
+    ...(clientId ? { "x-client-id": clientId } : {}),
   };
 
   const response = await fetch(url, {
